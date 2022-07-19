@@ -18,11 +18,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-
 app.use(morgan("dev"));
 
-app.get("/", function (req, res, next) {
-  res.send("Hola");
+app.get("/", function (req, res) {
+  res.send("Bienvenido a la API de SISLIC");
 });
 
 //nuestre rutas

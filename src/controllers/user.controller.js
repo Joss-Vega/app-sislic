@@ -27,6 +27,7 @@ userCtr.createUser = async (req, res, next) => {
     );
     return res.status(201).json({
       status: "Usuario creado",
+      data: response.rows,
     });
   } catch (e) {
     return next(e);
