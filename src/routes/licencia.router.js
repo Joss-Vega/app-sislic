@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 
-const router = express.Router();
+const licenciaRouter = express.Router();
 
-const licenciaCtr = require('../controllers/licencia.controller');
+const { ObtenerLicencias } = require("../controllers/licencia.controller");
 
-router.get('/obtenerlicencias', licenciaCtr.ObtenerLicencias);
+licenciaRouter.get("/obtenerlicencias", ObtenerLicencias);
 
-module.exports = router
+module.exports = licenciaRouter;

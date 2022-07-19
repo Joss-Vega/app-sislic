@@ -1,18 +1,40 @@
-const express  = require('express') ;
+const { Router } = require("express");
 
-const router = express.Router();
+const solicitudDocumentoRouter = Router();
 
-const solicitudDocumentoCtr = require('../controllers/solicitud.documento.controller');
+const {
+  SubirVoucher,
+  insertSolicitud_Documentos,
+  modificar_estado_Documentos,
+  obtener_lista_Documentos,
+  obtener_tipo_documentos,
+} = require("../controllers/solicitud.documento.controller");
 const { uploadVoucher } = require("../libs/upload");
 
-router.post('/subir_voucher/:id_solicitud', uploadVoucher, solicitudDocumentoCtr.SubirVoucher);
+solicitudDocumentoRouter.post(
+  "/subir_voucher/:id_solicitud",
+  uploadVoucher,
+  SubirVoucher
+);
 
-router.post('/insertSolicitud_Documentos', solicitudDocumentoCtr.insertSolicitud_Documentos);
+solicitudDocumentoRouter.post(
+  "/insertSolicitud_Documentos",
+  insertSolicitud_Documentos
+);
 
-router.get('/obtener_lista_documentos/:idsolicitud', solicitudDocumentoCtr.obtener_lista_Documentos);
+solicitudDocumentoRouter.get(
+  "/obtener_lista_documentos/:idsolicitud",
+  obtener_lista_Documentos
+);
 
-router.put('/modificar_estado_documentos', solicitudDocumentoCtr.modificar_estado_Documentos);
+solicitudDocumentoRouter.put(
+  "/modificar_estado_documentos",
+  modificar_estado_Documentos
+);
 
-router.get("/obtener_tipo_documentos", solicitudDocumentoCtr.obtener_tipo_documentos);
+solicitudDocumentoRouter.get(
+  "/obtener_tipo_documentos",
+  obtener_tipo_documentos
+);
 
-module.exports = router
+module.exports = solicitudDocumentoRouter;

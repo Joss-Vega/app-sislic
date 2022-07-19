@@ -1,8 +1,8 @@
-const express  = require('express') ;
-const inspeccionCtr = require('../controllers/inspeccion.controller');
+const { Router } = require("express");
+const inspeccionRouter = Router();
 
-const router = express.Router();
+const { insertInspeccion } = require("../controllers/inspeccion.controller");
 
-router.post('/insertInspeccion', inspeccionCtr.insertInspeccion);
+inspeccionRouter.post("/insertInspeccion", insertInspeccion);
 
-module.exports = router
+module.exports = inspeccionRouter;

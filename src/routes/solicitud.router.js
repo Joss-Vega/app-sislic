@@ -1,54 +1,73 @@
-const express = require("express");
-const solicitudCtr = require("../controllers/solicitud.controller");
+const { Router } = require("express");
+const solicitudRouter = Router();
 
-const router = express.Router();
+const {
+  insertSolicitud,
+  getSolicitudesEmitidas,
+  getSolicitudesPagadas,
+  getSolicitudesPagadasValidadas,
+  getSolicitudesRegistradas,
+  getSolicitudesRiesgosEvaluados,
+  getSolicitudesValidadas,
+  modificar_registro_constancia_pago,
+  modificar_solicitud_inspeccion,
+  obtener_consultas_tasa,
+  obtener_datos_colicitud_contribuyentes_establecimiento,
+  obtener_datos_solicitud_contri_establecimiento,
+  obtener_lista_solicitud_pago_registrados,
+  obtener_lista_solicitud_pendiente_evaluarRiesgo,
+  obtener_lista_solicitudes_pendientes_validados,
+  obtener_listas_solicitud_con_pago,
+  obtener_pago_validado,
+  obtener_voucher_pago_nivelriesgo_tasa,
+} = require("../controllers/solicitud.controller");
 
-router.post("/insert_Solicitud", solicitudCtr.insertSolicitud);
+solicitudRouter.post("/insert_Solicitud", insertSolicitud);
 
-router.get(
+solicitudRouter.get(
   "/obtener_lista_solicitud_pendientes_validados",
-  solicitudCtr.obtener_lista_solicitudes_pendientes_validados
+  obtener_lista_solicitudes_pendientes_validados
 );
-router.get(
+solicitudRouter.get(
   "/obtener_datos_solicitud_contribuyentes_establecimiento",
-  solicitudCtr.obtener_datos_colicitud_contribuyentes_establecimiento
+  obtener_datos_colicitud_contribuyentes_establecimiento
 );
-router.get("/obtener_consultas_tasa", solicitudCtr.obtener_consultas_tasa);
-router.get(
+solicitudRouter.get("/obtener_consultas_tasa", obtener_consultas_tasa);
+solicitudRouter.get(
   "/obtener_listas_solicitud_pago",
-  solicitudCtr.obtener_listas_solicitud_con_pago
+  obtener_listas_solicitud_con_pago
 );
-router.get(
+solicitudRouter.get(
   "/obtener_voucher_pago_nivelRiesgo_tasa",
-  solicitudCtr.obtener_voucher_pago_nivelriesgo_tasa
+  obtener_voucher_pago_nivelriesgo_tasa
 );
-router.get("/obtener_pago_validado", solicitudCtr.obtener_pago_validado);
-router.get(
+solicitudRouter.get("/obtener_pago_validado", obtener_pago_validado);
+solicitudRouter.get(
   "/obtener_datos_solicitud_contri_establecimiento",
-  solicitudCtr.obtener_datos_solicitud_contri_establecimiento
+  obtener_datos_solicitud_contri_establecimiento
 );
-router.get(
+solicitudRouter.get(
   "/obtene_lista_solicitud_pago_registrados",
-  solicitudCtr.obtener_lista_solicitud_pago_registrados
+  obtener_lista_solicitud_pago_registrados
 );
-router.get(
+solicitudRouter.get(
   "/obtener_lista_solicitud_pendiente_evaluarRiesgo",
-  solicitudCtr.obtener_lista_solicitud_pendiente_evaluarRiesgo
+  obtener_lista_solicitud_pendiente_evaluarRiesgo
 );
 
-router.put(
+solicitudRouter.put(
   "/modificar_registro_constancia_pago",
-  solicitudCtr.modificar_registro_constancia_pago
+  modificar_registro_constancia_pago
 );
-router.put(
+solicitudRouter.put(
   "/modificar_solicitud_inspeccion",
-  solicitudCtr.modificar_solicitud_inspeccion
+  modificar_solicitud_inspeccion
 );
-router.get("/registradas", solicitudCtr.getSolicitudesRegistradas);
-router.get("/validadas", solicitudCtr.getSolicitudesValidadas);
-router.get("/riesgos_evaluados", solicitudCtr.getSolicitudesRiesgosEvaluados);
-router.get("/pagadas", solicitudCtr.getSolicitudesPagadas);
-router.get("/pagadas_validadas", solicitudCtr.getSolicitudesPagadasValidadas);
-router.get("/emitidas", solicitudCtr.getSolicitudesEmitidas);
+solicitudRouter.get("/registradas", getSolicitudesRegistradas);
+solicitudRouter.get("/validadas", getSolicitudesValidadas);
+solicitudRouter.get("/riesgos_evaluados", getSolicitudesRiesgosEvaluados);
+solicitudRouter.get("/pagadas", getSolicitudesPagadas);
+solicitudRouter.get("/pagadas_validadas", getSolicitudesPagadasValidadas);
+solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
 
-module.exports = router;
+module.exports = solicitudRouter;

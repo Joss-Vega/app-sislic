@@ -1,6 +1,6 @@
-const express = require("express");
+const { Router } = require("express");
 
-const router = express.Router();
+const contribuyenteRouter = Router();
 
 const {
   insertContribuyente,
@@ -9,8 +9,8 @@ const {
   getSolicitudesByRuc,
 } = require("../controllers/contribuyente.controller");
 
-router.post("/insert_contribuyente", insertContribuyente);
-router.get("/ruc/:ruc", getContibruyenteFromAPI);
-router.get("/captcha", getCaptcha);
-router.get("/solicitudes/:ruc", getSolicitudesByRuc);
-module.exports = router;
+contribuyenteRouter.post("/insert_contribuyente", insertContribuyente);
+contribuyenteRouter.get("/ruc/:ruc", getContibruyenteFromAPI);
+contribuyenteRouter.get("/captcha", getCaptcha);
+contribuyenteRouter.get("/solicitudes/:ruc", getSolicitudesByRuc);
+module.exports = contribuyenteRouter;

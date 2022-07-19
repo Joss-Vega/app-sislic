@@ -1,11 +1,20 @@
-const express = require('express');
+const { Router } = require("express");
 
-const router = express.Router();
+const router = Router();
 
-const establecimientoPisosCtr = require('../controllers/establecimiento.pisos.controller');
+const {
+  DeletePisosEstablecimiento,
+  ObtenerDatosPisosEstablecimiento,
+} = require("../controllers/establecimiento.pisos.controller");
 
-router.get('/obtener_datos_pisos_establecimiento', establecimientoPisosCtr.ObtenerDatosPisosEstablecimiento);
+router.get(
+  "/obtener_datos_pisos_establecimiento",
+  ObtenerDatosPisosEstablecimiento
+);
 
-router.delete('/delete_datos_pisos_establecimiento', establecimientoPisosCtr.DeletePisosEstablecimiento);
+router.delete(
+  "/delete_datos_pisos_establecimiento",
+  DeletePisosEstablecimiento
+);
 
-module.exports = router
+module.exports = router;
