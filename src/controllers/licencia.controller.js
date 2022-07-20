@@ -1,5 +1,5 @@
 const pool = require("../database")
-
+const licenciaCtr = {}
 licenciaCtr.ObtenerLicencias = async(req, res) => {
     try {
         const {id_establecimiento,id_solicitud,id_usuarioemi,nro_licencia,link_file,comentario} = req.body;

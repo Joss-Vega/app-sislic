@@ -14,6 +14,7 @@ const hasRole = (roles) => (req, res, next) => {
   }
   const token = bearerHeader.split(" ")[1];
   jwt.verify(token, secret, (err, decoded) => {
+    console.log(decoded)
     err
       ? res.status(401).json(unauthorized)
       : roles.includes(decoded.usuario.rol)

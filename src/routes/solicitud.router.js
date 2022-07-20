@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const solicitudRouter = Router();
-
+const { hasRole } = require("../auth/token_validation") ;
 const {
   insertSolicitud,
   getSolicitudesEmitidas,
@@ -66,8 +66,8 @@ solicitudRouter.put(
 solicitudRouter.get("/registradas", getSolicitudesRegistradas);
 solicitudRouter.get("/validadas", getSolicitudesValidadas);
 solicitudRouter.get("/riesgos_evaluados", getSolicitudesRiesgosEvaluados);
-solicitudRouter.get("/pagadas", getSolicitudesPagadas);
-solicitudRouter.get("/pagadas_validadas", getSolicitudesPagadasValidadas);
+solicitudRouter.get("/pagadas", hasRole(["default"]),getSolicitudesPagadas);
+solicitudRouter.get("/pagadas_validadas",hasRole(["funclic"]), getSolicitudesPagadasValidadas);
 solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
 
 module.exports = solicitudRouter;
