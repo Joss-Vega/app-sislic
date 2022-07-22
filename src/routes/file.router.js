@@ -4,7 +4,8 @@ const pool = require("../database");
 const filesIDS = ["1", "2", "3", "4"];
 const { v4 } = require("uuid");
 const multer = require("multer");
-const { firebaseStorage, uploadFile } = require("../firebase/firebase.config");
+const { uploadFile } = require("../firebase/firebase.config");
+const { sendEmisionLicencia } = require("../libs/mailer");
 const fileCB = (req, file, cb) => {
   // console.log("----------------AQUI EMPIEZA---------------");
   // console.log(req);
@@ -34,13 +35,31 @@ const bufferUpload = multer({
 });
 
 fileRouter.post(
-  "/voucher/:id_solicitud",
-  upload.single("voucher"),
+  "/voucher/:codigo",
+  bufferUpload.single("voucher"),
   (req, res, next) => {
-    console.log(req.files);
-    res.json({
-      status: "hola",
-    });
+    try {
+      const { codigo } = req.params;
+
+      const { originalname, buffer } = req.file;
+      const newName = getUniqueFile(originalname);
+      uploadFile(newName, `vouchers/${codigo}`, buffer).then((result) => {
+        pool
+          .query(
+            "update solicitud set id_solestado = 4,voucher =$1 where codigo_solicitud = $2",
+            [newName, codigo]
+          )
+          .then((result) => {
+            res.json({
+              ok: true,
+              message: "Archivo subido correctamente",
+              file: newName,
+            });
+          });
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
@@ -101,6 +120,69 @@ fileRouter.post(
         status: "hola",
       });
     });
+  }
+);
+
+fileRouter.post(
+  "/licencia",
+  bufferUpload.single("licencia"),
+  (req, res, next) => {
+    try {
+      const { originalname, buffer } = req.file;
+      console.log(req.body);
+      console.log(originalname, buffer);
+      const {
+        id_solicitud,
+        id_establecimiento,
+        numero_licencia,
+        comentario,
+        codigo_solicitud,
+        correo,
+      } = req.body;
+
+      const newName = getUniqueFile(originalname);
+      uploadFile(newName, `licencias/${codigo_solicitud}`, buffer).then(
+        (result) => {
+          pool
+            .query(
+              "insert into licencia (id_establecimiento,id_solicitud,id_usuarioemi,nro_licencia,fecha_emision,link_file,comentario) values($1,$2,$3,$4,now(),$5,$6)",
+              [
+                id_establecimiento,
+                id_solicitud,
+                1,
+                numero_licencia,
+                newName,
+                comentario,
+              ]
+            )
+            .then((result) => {
+              console.log(result);
+              pool
+                .query(
+                  "update solicitud set id_solestado = 6 where id_solicitud = $1",
+                  [id_solicitud]
+                )
+                .then((result) => {
+                  console.log(result);
+                  sendEmisionLicencia({
+                    codigo_solicitud,
+                    numero_licencia,
+                    correo,
+                    comentario,
+                    archivo: newName,
+                  });
+                  res.json({
+                    ok: true,
+                    message: "Archivo subido correctamente",
+                    file: newName,
+                  });
+                });
+            });
+        }
+      );
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const solicitudRouter = Router();
-const { hasRole } = require("../auth/token_validation") ;
+const { hasRole } = require("../auth/token_validation");
 const {
   insertSolicitud,
   getSolicitudesEmitidas,
@@ -20,7 +20,11 @@ const {
   obtener_listas_solicitud_con_pago,
   obtener_pago_validado,
   obtener_voucher_pago_nivelriesgo_tasa,
-  validarSolicitud
+  validarSolicitud,
+  getSolicitudesByCodigo,
+  getSolicitudByCodigoEvaluada,
+  getSolicitudByCodigoPagada,
+  validarPago,
 } = require("../controllers/solicitud.controller");
 
 solicitudRouter.post("/insertSolicitud", insertSolicitud);
@@ -67,9 +71,22 @@ solicitudRouter.put(
 solicitudRouter.get("/registradas", getSolicitudesRegistradas);
 solicitudRouter.get("/validadas", getSolicitudesValidadas);
 solicitudRouter.get("/riesgos_evaluados", getSolicitudesRiesgosEvaluados);
-solicitudRouter.get("/pagadas", hasRole(["default","lic",]),getSolicitudesPagadas);
-solicitudRouter.get("/pagadas_validadas",hasRole(["default"]), getSolicitudesPagadasValidadas);
+solicitudRouter.get(
+  "/pagadas",
+
+  getSolicitudesPagadas
+);
+solicitudRouter.get(
+  "/pagadas_validadas",
+
+  getSolicitudesPagadasValidadas
+);
 solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
 solicitudRouter.put("/validar", validarSolicitud);
+solicitudRouter.put("/validar_pago", validarPago);
+
+solicitudRouter.get("/codigo/:codigo", getSolicitudesByCodigo);
+solicitudRouter.get("/codigo/:codigo/evaluada", getSolicitudByCodigoEvaluada);
+solicitudRouter.get("/codigo/:codigo/pagada", getSolicitudByCodigoPagada);
 
 module.exports = solicitudRouter;

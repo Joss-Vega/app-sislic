@@ -12,6 +12,7 @@ const inspeccionRouter = require("./inspeccion.router");
 const fileRouter = require("./file.router");
 const establecimientoPisosRouter = require("./establecimiento.pisos.router");
 const licenciaRouter = require("./licencia.router");
+const nivelRiesgoRouter = require("./nivel.riesgo.router");
 
 apiRouter.use("/solicitud", solicitudRouter);
 apiRouter.use("/contribuyente", contribuyenteRouter);
@@ -25,5 +26,6 @@ apiRouter.use("/files", fileRouter);
 apiRouter.use("/users", userRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/establecimientoPisos", establecimientoPisosRouter);
+apiRouter.use("/niveles_riesgo", nivelRiesgoRouter);
 
 module.exports = apiRouter;

@@ -81,4 +81,19 @@ userCtr.getAllRoles = async (req, res, next) => {
   }
 };
 
+userCtr.deleteUser = async (req, res, next) => {
+  try {
+    const { id_user } = req.params;
+    pool
+      .query("delete from usuarios where id_usuario = $1", [id_user])
+      .then((data) => {
+        return res
+          .status(200)
+          .json(`Usuario ${id_user} eliminado correctamente...!`);
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = userCtr;

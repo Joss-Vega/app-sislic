@@ -49,7 +49,9 @@ const getSolicitudByEstadoQuery = (estado) => {
   e.referencia,
   e.empleados,
   e.pisos,
-  s.codigo_solicitud
+  s.codigo_solicitud,
+  s.id_solestado,
+  s.tipotramite
 from solicitud s
   join contribuyente c on (s.id_contribuyente = c.id_contribuyente)
   join solicitud_estado se on (se.id_solestado = s.id_solestado)
@@ -391,6 +393,73 @@ solicitudCtr.validarSolicitud = async (req, res, next) => {
       message: "Solicitud validada correctamente",
       data: response.rows,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+solicitudCtr.getSolicitudesByCodigo = (req, res, next) => {
+  try {
+    const { codigo } = req.params;
+    console.log(codigo);
+    pool
+      .query(
+        "select * from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) where codigo_solicitud=$1",
+        [codigo]
+      )
+      .then((data) => {
+        res.json(data.rows);
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+solicitudCtr.getSolicitudByCodigoEvaluada = (req, res, next) => {
+  try {
+    const { codigo } = req.params;
+    pool
+      .query(
+        "select s.codigo_solicitud,s.tipotramite,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 3",
+        [codigo]
+      )
+      .then((data) => {
+        const [s] = data.rows;
+        res.json(s || {});
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+solicitudCtr.getSolicitudByCodigoPagada = (req, res, next) => {
+  try {
+    const { codigo } = req.params;
+    pool
+      .query(
+        "select s.codigo_solicitud,s.tipotramite,s.voucher,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 4",
+        [codigo]
+      )
+      .then((data) => {
+        const [s] = data.rows;
+        res.json(s || {});
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+solicitudCtr.validarPago = (req, res, next) => {
+  try {
+    const { codigo } = req.body;
+    console.log(codigo)
+    pool
+      .query(
+        "update solicitud set id_solestado = 5 where codigo_solicitud=$1;",
+        [codigo]
+      )
+      .then((data) => {
+        res.json(data.rows);
+      });
   } catch (error) {
     next(error);
   }
