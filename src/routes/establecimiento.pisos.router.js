@@ -4,13 +4,12 @@ const router = Router();
 
 const {
   DeletePisosEstablecimiento,
-  ObtenerDatosPisosEstablecimiento,
+  getPisosEstablecimiento,
+  insertPisosEstablecimiento,
 } = require("../controllers/establecimiento.pisos.controller");
 
-router.get(
-  "/obtener_datos_pisos_establecimiento",
-  ObtenerDatosPisosEstablecimiento
-);
+router.get("/establecimiento/:id_establecimiento", getPisosEstablecimiento);
+router.post("/establecimiento/:id_establecimiento", insertPisosEstablecimiento);
 
 router.delete(
   "/delete_datos_pisos_establecimiento",

@@ -1,8 +1,60 @@
 const pool = require("../database");
 // const helpers = require('../libs/helpers');
-
+const { sendSolicitudCodeEmail } = require("../libs/mailer");
 //insertar establecimiento
 const solicitudCtr = {};
+const makeid = (length) => {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
+const getSolicitudByEstadoQuery = (estado) => {
+  return `select e.id_establecimiento,
+  s.id_solicitud,
+  c.tipo_contribuyente,
+  c.ruc,
+  c.razon_social,
+  c.direccion direccion_contribuyente,
+  c.distrito,
+  c.provincia,
+  c.departamento,
+  c.reg_tributario,
+  s.notif_direccion,
+  s.notif_distrito,
+  s.correo,
+  s.telefono,
+  e.direccion direccion_establecimiento,
+  e.numero,
+  e.letra,
+  e.interior,
+  e.interior_let,
+  e.mz,
+  e.lote,
+  e.bloque,
+  e.dpto,
+  e.urb,
+  e.tipo_predio,
+  e.clasificacion,
+  e.zonificacion,
+  e.nombre_comercial,
+  e.area_local,
+  e.aforo,
+  e.antiguedad,
+  e.referencia,
+  e.empleados,
+  e.pisos,
+  s.codigo_solicitud
+from solicitud s
+  join contribuyente c on (s.id_contribuyente = c.id_contribuyente)
+  join solicitud_estado se on (se.id_solestado = s.id_solestado)
+  join establecimiento e on (e.id_establecimiento = s.id_establecimiento) where s.id_solestado=${estado};`;
+};
 
 //Insertar Solicitudes
 solicitudCtr.insertSolicitud = async (req, res) => {
@@ -10,35 +62,37 @@ solicitudCtr.insertSolicitud = async (req, res) => {
     const {
       id_contribuyente,
       id_establecimiento,
-      tipotramite,
-      notif_direccion,
-      notif_distrito,
-      correo,
+      tipoTramite,
+      direccionNotificacion,
+      distritoNotificacion,
+      email,
       telefono,
-      anexo_02,
-      declaracion_jurada,
-      codigo_solicitud,
-      id_solestado,
     } = req.body;
-    const response = await pool.query(
-      `insert into solicitud (id_contribuyente, id_establecimiento, tipotramite, notif_direccion, notif_distrito, correo, telefono, anexo_02, declaracion_jurada,
+    const codigo_solicitud = makeid(10);
+    pool
+      .query(
+        `insert into solicitud (id_contribuyente, id_establecimiento, tipotramite, notif_direccion, notif_distrito, correo, telefono, anexo_02, declaracion_jurada,
                 fecha_reg, codigo_solicitud, id_solestado)
-                values ($1,$2,$3,$4,$5,$6,$7,$8,$9,now(),$10,$11) returning id_solicitud;`,
-      [
-        id_contribuyente,
-        id_establecimiento,
-        tipotramite,
-        notif_direccion,
-        notif_distrito,
-        correo,
-        telefono,
-        anexo_02,
-        declaracion_jurada,
-        codigo_solicitud,
-        id_solestado,
-      ]
-    );
-    return res.status(200).json(response.rows);
+                values ($1,$2,$3,$4,$5,$6,$7,1,1,now(),$8,1) returning id_solicitud;`,
+        [
+          id_contribuyente,
+          id_establecimiento,
+          tipoTramite,
+          direccionNotificacion,
+          distritoNotificacion,
+          email,
+          telefono,
+          codigo_solicitud,
+        ]
+      )
+      .then(({ rows }) => {
+        sendSolicitudCodeEmail(email, codigo_solicitud);
+
+        return res.status(200).json({
+          id_solicitud: rows[0].id_solicitud,
+          codigo_solicitud,
+        });
+      });
   } catch (e) {
     console.log(e);
     return res.status(500).json("Internal Server error...!");
@@ -276,9 +330,7 @@ solicitudCtr.obtener_lista_solicitud_pendiente_evaluarRiesgo = async (
 
 solicitudCtr.getSolicitudesRegistradas = async (req, res, next) => {
   try {
-    const response =
-      await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 1; 
-    `);
+    const response = await pool.query(getSolicitudByEstadoQuery(1));
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -287,9 +339,7 @@ solicitudCtr.getSolicitudesRegistradas = async (req, res, next) => {
 
 solicitudCtr.getSolicitudesValidadas = async (req, res, next) => {
   try {
-    const response =
-      await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 2; 
-      `);
+    const response = await pool.query(getSolicitudByEstadoQuery(2));
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -298,9 +348,7 @@ solicitudCtr.getSolicitudesValidadas = async (req, res, next) => {
 
 solicitudCtr.getSolicitudesRiesgosEvaluados = async (req, res, next) => {
   try {
-    const response =
-      await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 3; 
-      `);
+    const response = await pool.query(getSolicitudByEstadoQuery(3));
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -308,9 +356,7 @@ solicitudCtr.getSolicitudesRiesgosEvaluados = async (req, res, next) => {
 };
 solicitudCtr.getSolicitudesPagadas = async (req, res, next) => {
   try {
-    const response =
-      await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 4; 
-      `);
+    const response = await pool.query(getSolicitudByEstadoQuery(4));
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -318,9 +364,7 @@ solicitudCtr.getSolicitudesPagadas = async (req, res, next) => {
 };
 solicitudCtr.getSolicitudesPagadasValidadas = async (req, res, next) => {
   try {
-    const response =
-      await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 5; 
-      `);
+    const response = await pool.query(getSolicitudByEstadoQuery(5));
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -328,14 +372,28 @@ solicitudCtr.getSolicitudesPagadasValidadas = async (req, res, next) => {
 };
 
 solicitudCtr.getSolicitudesEmitidas = async (req, res, next) => {
-    try {
-      const response =
-        await pool.query(`select * from solicitud s join contribuyente c on (s.id_contribuyente=c.id_contribuyente) join solicitud_estado se on (se.id_solestado=s.id_solestado) where se.id_solestado = 6; 
-        `);
-      return res.status(200).json(response.rows);
-    } catch (error) {
-      next(error);
-    }
-  };
+  try {
+    const response = await pool.query(getSolicitudByEstadoQuery(6));
+    return res.status(200).json(response.rows);
+  } catch (error) {
+    next(error);
+  }
+};
+solicitudCtr.validarSolicitud = async (req, res, next) => {
+  try {
+    const response = await pool.query(
+      `update solicitud set id_solestado = 2 where id_solicitud=$1;
+    `,
+      [req.body.id_solicitud]
+    );
+
+    res.json({
+      message: "Solicitud validada correctamente",
+      data: response.rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = solicitudCtr;

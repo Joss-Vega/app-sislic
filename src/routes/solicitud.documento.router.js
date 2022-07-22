@@ -8,6 +8,7 @@ const {
   modificar_estado_Documentos,
   obtener_lista_Documentos,
   obtener_tipo_documentos,
+  getDocumentosBySolicitud,
 } = require("../controllers/solicitud.documento.controller");
 const { uploadVoucher } = require("../libs/upload");
 
@@ -25,6 +26,10 @@ solicitudDocumentoRouter.post(
 solicitudDocumentoRouter.get(
   "/obtener_lista_documentos/:idsolicitud",
   obtener_lista_Documentos
+);
+solicitudDocumentoRouter.get(
+  "/solicitud/:id_solicitud",
+  getDocumentosBySolicitud
 );
 
 solicitudDocumentoRouter.put(

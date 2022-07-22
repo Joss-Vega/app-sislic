@@ -11,32 +11,37 @@ const contribuyenteCtr = {};
 
 contribuyenteCtr.insertContribuyente = async (req, res) => {
   try {
+    {
+    }
     const {
-      tipo_contribuyente,
+      tipoContribuyente,
       ruc,
-      razon_social,
-      direccion,
-      distrito,
+      razonSocial,
       provincia,
       departamento,
-      reg_tributario,
-      correo,
+      distrito,
+      direccion,
       telefono,
+      email,
+
+      regimenTributario,
     } = req.body;
     const response = await pool.query(
       `insert into contribuyente (tipo_contribuyente, ruc, razon_social, direccion, 
                 distrito, provincia, departamento, reg_tributario, correo, telefono)
                 values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning id_contribuyente;`,
       [
-        tipo_contribuyente,
+        tipoContribuyente,
         ruc,
-        razon_social,
+        razonSocial,
         direccion,
         distrito,
+
         provincia,
         departamento,
-        reg_tributario,
-        correo,
+        regimenTributario,
+        email,
+
         telefono,
       ]
     );

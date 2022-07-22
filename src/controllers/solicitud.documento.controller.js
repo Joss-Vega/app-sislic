@@ -27,7 +27,8 @@ solicitudDocumentoCtr.obtener_lista_Documentos = async (req, res) => {
     const response = await pool.query(
       `select * 
                 from solicitud_documentos sd 
-                where sd.id_solicitud  = $1;`, [idsolicitud]
+                where sd.id_solicitud  = $1;`,
+      [idsolicitud]
     );
     return res.status(200).json(response.rows);
   } catch (e) {
@@ -56,9 +57,9 @@ solicitudDocumentoCtr.modificar_estado_Documentos = async (req, res) => {
 //Subir Voucher
 solicitudDocumentoCtr.SubirVoucher = async (req, res) => {
   try {
-    const voucher = req.file.originalname
-    console.log(voucher)
-    const {id_solicitud} = req.params;
+    const voucher = req.file.originalname;
+    console.log(voucher);
+    const { id_solicitud } = req.params;
     const response = await pool.query(
       `update solicitud 
                 set voucher = $1
@@ -78,6 +79,20 @@ solicitudDocumentoCtr.obtener_tipo_documentos = async (req, res, next) => {
     return res.status(200).json(response.rows);
   } catch (e) {
     next(e);
+  }
+};
+
+solicitudDocumentoCtr.getDocumentosBySolicitud = async (req, res, next) => {
+  try {
+    const { id_solicitud } = req.params;
+    const response = await pool.query(
+      `select sd.id_documento,st.nombre,sd.link_file,sd.observaciones from solicitud_documentos sd join solicitud_tipodoc st on (sd.id_tipodoc = st.id_tipodoc) where sd.id_solicitud = $1 
+    `,
+      [id_solicitud]
+    );
+    res.json(response.rows);
+  } catch (error) {
+    next(error);
   }
 };
 

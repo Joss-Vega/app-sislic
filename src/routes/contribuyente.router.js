@@ -9,7 +9,7 @@ const {
   getSolicitudesByRuc,
 } = require("../controllers/contribuyente.controller");
 
-contribuyenteRouter.post("/insert_contribuyente", insertContribuyente);
+contribuyenteRouter.post("/insertContribuyente", insertContribuyente);
 contribuyenteRouter.get("/ruc/:ruc", getContibruyenteFromAPI);
 contribuyenteRouter.get("/captcha", getCaptcha);
 contribuyenteRouter.get("/solicitudes/:ruc", getSolicitudesByRuc);

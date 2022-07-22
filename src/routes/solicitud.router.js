@@ -20,9 +20,10 @@ const {
   obtener_listas_solicitud_con_pago,
   obtener_pago_validado,
   obtener_voucher_pago_nivelriesgo_tasa,
+  validarSolicitud
 } = require("../controllers/solicitud.controller");
 
-solicitudRouter.post("/insert_Solicitud", insertSolicitud);
+solicitudRouter.post("/insertSolicitud", insertSolicitud);
 
 solicitudRouter.get(
   "/obtener_lista_solicitud_pendientes_validados",
@@ -66,8 +67,9 @@ solicitudRouter.put(
 solicitudRouter.get("/registradas", getSolicitudesRegistradas);
 solicitudRouter.get("/validadas", getSolicitudesValidadas);
 solicitudRouter.get("/riesgos_evaluados", getSolicitudesRiesgosEvaluados);
-solicitudRouter.get("/pagadas", hasRole(["default"]),getSolicitudesPagadas);
-solicitudRouter.get("/pagadas_validadas",hasRole(["funclic"]), getSolicitudesPagadasValidadas);
+solicitudRouter.get("/pagadas", hasRole(["default","lic",]),getSolicitudesPagadas);
+solicitudRouter.get("/pagadas_validadas",hasRole(["default"]), getSolicitudesPagadasValidadas);
 solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
+solicitudRouter.put("/validar", validarSolicitud);
 
 module.exports = solicitudRouter;
