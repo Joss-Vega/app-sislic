@@ -124,13 +124,54 @@ fileRouter.post(
 );
 
 fileRouter.post(
+  "/inspeccion",
+  bufferUpload.single("inspeccion"),
+  async (req, res, next) => {
+    try {
+      console.log(req.file,req.body)
+      const { originalname, buffer } = req.file;
+
+      const { id_solicitud, id_establecimiento, comentario, codigo_solicitud } =
+        req.body;
+
+      const newName = getUniqueFile(originalname);
+      uploadFile(newName, `inspecciones/${codigo_solicitud}`, buffer).then(
+        (result) => {
+          pool
+            .query(
+              `insert into inspeccion (id_solicitud, id_establecimiento, comentario, link_file, fecha_registro,id_usuarioreg)
+                  values ($1,$2,$3,$4,now(),$5) returning id_inspeccion;`,
+              [id_solicitud, id_establecimiento, comentario, newName, 1]
+            )
+            .then((data) => {
+              pool
+                .query(
+                  "update solicitud set inspeccion = 1 where id_solicitud = $1",
+                  [id_solicitud]
+                )
+                .then((data) => {
+                  res.json({
+                    ok: true,
+                    message: "Archivo subido correctamente",
+                    file: newName,
+                  });
+                });
+            });
+        }
+      );
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+fileRouter.post(
   "/licencia",
   bufferUpload.single("licencia"),
   (req, res, next) => {
     try {
       const { originalname, buffer } = req.file;
-      console.log(req.body);
-      console.log(originalname, buffer);
+
       const {
         id_solicitud,
         id_establecimiento,

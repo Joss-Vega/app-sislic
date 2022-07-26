@@ -14,7 +14,7 @@ const makeid = (length) => {
   return result;
 };
 
-const getSolicitudByEstadoQuery = (estado) => {
+const getSolicitudByEstadoQuery = (estado, condition = "") => {
   return `select e.id_establecimiento,
   s.id_solicitud,
   c.tipo_contribuyente,
@@ -55,7 +55,8 @@ const getSolicitudByEstadoQuery = (estado) => {
 from solicitud s
   join contribuyente c on (s.id_contribuyente = c.id_contribuyente)
   join solicitud_estado se on (se.id_solestado = s.id_solestado)
-  join establecimiento e on (e.id_establecimiento = s.id_establecimiento) where s.id_solestado=${estado};`;
+  join establecimiento e on (e.id_establecimiento = s.id_establecimiento) 
+  where s.id_solestado=${estado} ${condition};`;
 };
 
 //Insertar Solicitudes
@@ -366,7 +367,25 @@ solicitudCtr.getSolicitudesPagadas = async (req, res, next) => {
 };
 solicitudCtr.getSolicitudesPagadasValidadas = async (req, res, next) => {
   try {
-    const response = await pool.query(getSolicitudByEstadoQuery(5));
+    const response = await pool.query(
+      getSolicitudByEstadoQuery(
+        5,
+        "and s.id_riesgo in (1,2) or (id_solestado=5 and  inspeccion is not null and id_riesgo in (3,4))"
+      )
+    );
+    return res.status(200).json(response.rows);
+  } catch (error) {
+    next(error);
+  }
+};
+solicitudCtr.getSolicitudesInspeccion = async (req, res, next) => {
+  try {
+    const response = await pool.query(
+      getSolicitudByEstadoQuery(
+        5,
+        "and s.id_riesgo in (3,4) and s.inspeccion is null"
+      )
+    );
     return res.status(200).json(response.rows);
   } catch (error) {
     next(error);
@@ -451,7 +470,7 @@ solicitudCtr.getSolicitudByCodigoPagada = (req, res, next) => {
 solicitudCtr.validarPago = (req, res, next) => {
   try {
     const { codigo } = req.body;
-    console.log(codigo)
+    console.log(codigo);
     pool
       .query(
         "update solicitud set id_solestado = 5 where codigo_solicitud=$1;",
@@ -464,5 +483,21 @@ solicitudCtr.validarPago = (req, res, next) => {
     next(error);
   }
 };
-
+solicitudCtr.rechazarSolicitud = (req, res, next) => {
+  try {
+    const { id_solicitud } = req.params;
+    const { motivo } = req.body;
+    console.log(id_solicitud, motivo);
+    pool
+      .query(
+        `update solicitud set id_solestado = 0, motivo_rechazo = $2  where id_solicitud=$1;`,
+        [id_solicitud, motivo]
+      )
+      .then((data) => {
+        res.json(data.rows);
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = solicitudCtr;

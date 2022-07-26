@@ -25,6 +25,8 @@ const {
   getSolicitudByCodigoEvaluada,
   getSolicitudByCodigoPagada,
   validarPago,
+  rechazarSolicitud,
+  getSolicitudesInspeccion,
 } = require("../controllers/solicitud.controller");
 
 solicitudRouter.post("/insertSolicitud", insertSolicitud);
@@ -71,19 +73,14 @@ solicitudRouter.put(
 solicitudRouter.get("/registradas", getSolicitudesRegistradas);
 solicitudRouter.get("/validadas", getSolicitudesValidadas);
 solicitudRouter.get("/riesgos_evaluados", getSolicitudesRiesgosEvaluados);
-solicitudRouter.get(
-  "/pagadas",
+solicitudRouter.get("/pagadas", getSolicitudesPagadas);
+solicitudRouter.get("/pagadas_validadas", getSolicitudesPagadasValidadas);
+solicitudRouter.get("/inspeccion", getSolicitudesInspeccion);
 
-  getSolicitudesPagadas
-);
-solicitudRouter.get(
-  "/pagadas_validadas",
-
-  getSolicitudesPagadasValidadas
-);
 solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
 solicitudRouter.put("/validar", validarSolicitud);
 solicitudRouter.put("/validar_pago", validarPago);
+solicitudRouter.put("/rechazar/:id_solicitud", rechazarSolicitud);
 
 solicitudRouter.get("/codigo/:codigo", getSolicitudesByCodigo);
 solicitudRouter.get("/codigo/:codigo/evaluada", getSolicitudByCodigoEvaluada);

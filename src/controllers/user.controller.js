@@ -85,7 +85,7 @@ userCtr.deleteUser = async (req, res, next) => {
   try {
     const { id_user } = req.params;
     pool
-      .query("delete from usuarios where id_usuario = $1", [id_user])
+      .query("delete from usuario where id_usuario = $1 ", [id_user])
       .then((data) => {
         return res
           .status(200)
