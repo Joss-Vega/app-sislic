@@ -370,7 +370,7 @@ solicitudCtr.getSolicitudesPagadasValidadas = async (req, res, next) => {
     const response = await pool.query(
       getSolicitudByEstadoQuery(
         5,
-        "and s.id_riesgo in (1,2) or (id_solestado=5 and  inspeccion is not null and id_riesgo in (3,4))"
+        "and s.id_riesgo in (1,2) or (s.id_solestado=5 and  s.inspeccion is not null and s.id_riesgo in (3,4))"
       )
     );
     return res.status(200).json(response.rows);
