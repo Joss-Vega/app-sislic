@@ -3,6 +3,7 @@ const pool = require("../database");
 const {
   sendSolicitudCodeEmail,
   sendSolicitudRechazada,
+  sendPagoRechazado,
 } = require("../libs/mailer");
 //insertar establecimiento
 const solicitudCtr = {};
@@ -488,6 +489,17 @@ solicitudCtr.validarPago = (req, res, next) => {
 };
 solicitudCtr.rechazarPago = (req, res, next) => {
   try {
+    const { codigo_solicitud } = req.params;
+    const { motivo } = req.body;
+    pool
+      .query(
+        `update solicitud set id_solestado = 3,voucher = null  where codigo_solicitud=$1 returning correo;`,
+        [codigo_solicitud]
+      )
+      .then(({ rows }) => {
+        sendPagoRechazado(rows[0].correo, motivo);
+        res.json(rows);
+      });
   } catch (error) {
     next(error);
   }

@@ -27,6 +27,7 @@ const {
   validarPago,
   rechazarSolicitud,
   getSolicitudesInspeccion,
+  rechazarPago,
 } = require("../controllers/solicitud.controller");
 
 solicitudRouter.post("/insertSolicitud", insertSolicitud);
@@ -81,6 +82,7 @@ solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
 solicitudRouter.put("/validar", validarSolicitud);
 solicitudRouter.put("/validar_pago", validarPago);
 solicitudRouter.put("/rechazar/:id_solicitud", rechazarSolicitud);
+solicitudRouter.put("/pago/:codigo_solicitud", rechazarPago);
 
 solicitudRouter.get("/codigo/:codigo", getSolicitudesByCodigo);
 solicitudRouter.get("/codigo/:codigo/evaluada", getSolicitudByCodigoEvaluada);
