@@ -16,7 +16,6 @@ sendSolicitudCodeEmail = (email, code) => {
     to: email,
     subject: "¡Gracias Por Realizar Tu Solicitud!",
     html: `    
-      <!--Copia desde aquí-->
       <table style="max-width: 600px; padding: 10px; margin:0 auto; border-collapse: collapse;">
         <tr>
           <td style="background-color: #ecf0f1; text-align: left; padding: 0">
@@ -59,7 +58,6 @@ sendSolicitudCodeEmail = (email, code) => {
           </td>
         </tr>
       </table>
-      <!--hasta aquí-->
     
       `,
   });

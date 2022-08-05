@@ -1,45 +1,29 @@
 const pool = require("../database");
-
 const jwt = require("jsonwebtoken");
-const helpers = require("../libs/helpers");
-const bcrypt = require("bcryptjs");
-const secret = "oido-amigo-HMDA-access-token";
-const refreshTokenSecret = "oido-amigo-HMDA-refresh-access-token";
+const { hash } = require("bcryptjs");
+const { tokenSecret, refreshSecret } = require("../config");
 
-const authCtr = {};
+const authController = {};
 
-authCtr.login = async (req, res, next) => {
-  try {
-    const { username, password } = req.body;
+authController.login = async (req, res) => {
+  const user = req.user;
+  const access_token = jwt.sign({ user }, tokenSecret, {
+    expiresIn: "5s",
+  });
+  const refresh_token = jwt.sign({ user }, refreshSecret, {
+    expiresIn: "1d",
+  });
 
-    const { rows } = await pool.query(
-      "select u.usuario,u.clave,r.nombre from usuario u  join rol r on (u.id_rol=r.id_rol)   where u.usuario = $1",
-      [username]
-    );
-
-    if (rows.length != 0) {
-      const { id_usuario, nombre, clave } = rows[0];
-      if (await bcrypt.compare(password, clave)) {
-        const usuario = {
-          idusuario: id_usuario,
-          username,
-          rol: nombre,
-        };
-
-        const accessToken = jwt.sign({ usuario }, secret, {
-          expiresIn: "900s",
-        });
-        const refreshToken = jwt.sign({ usuario }, refreshTokenSecret);
-        const tokens = { accessToken, refreshToken };
-        res.cookie("jwt", tokens);
-
-        return res.status(200).json(tokens);
-      }
-    }
-    next(new Error("Credenciales de acceso incorrectas"));
-  } catch (e) {
-    next(e);
-  }
+  const tokens = { access_token, refresh_token };
+  const hashedRefreshToken = await hash(refresh_token, 10);
+  const result = await pool.query(
+    "update usuario set hash = $1 where id_usuario = $2",
+    [hashedRefreshToken, user.id]
+  );
+  res.cookie("jwt", tokens, { httpOnly: true });
+  res.json(tokens);
 };
 
-module.exports = authCtr;
+
+
+module.exports = authController;

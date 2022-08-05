@@ -5,7 +5,8 @@ const userCtr = {};
 
 userCtr.getAccessFromRoleName = async (req, res, next) => {
   try {
-    const { role } = req.params;
+    const { role } = req.user;
+    
     const response = await pool.query(
       "SELECT a.id_acceso,a.nombre, a.ruta FROM ROL R JOIN ROL_ACCESO RA ON (R.ID_ROL = RA.ID_ROL) JOIN ACCESO A ON (A.ID_ACCESO = RA.ID_ACCESO) WHERE R.NOMBRE   =$1",
       [role]
