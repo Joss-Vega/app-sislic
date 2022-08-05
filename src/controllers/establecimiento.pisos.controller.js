@@ -6,14 +6,7 @@ establecimientoPisosCtr.insertPisosEstablecimiento = async (req, res, next) => {
   try {
     const { pisos } = req.body;
     const { id_establecimiento } = req.params;
-    console.log(
-      getQueryPisos(pisos.length),
-      pisos
-        .map((e, i) => [id_establecimiento, i + 1, e])
-        .join()
-        .split(",")
-        .map((e) => parseInt(e))
-    );
+ 
     const response = await pool.query(
       getQueryPisos(pisos.length),
       pisos

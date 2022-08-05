@@ -8,7 +8,7 @@ const authController = {};
 authController.login = async (req, res) => {
   const user = req.user;
   const access_token = jwt.sign({ user }, tokenSecret, {
-    expiresIn: "5s",
+    expiresIn: "30m",
   });
   const refresh_token = jwt.sign({ user }, refreshSecret, {
     expiresIn: "1d",
