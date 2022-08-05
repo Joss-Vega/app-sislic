@@ -486,6 +486,13 @@ solicitudCtr.validarPago = (req, res, next) => {
     next(error);
   }
 };
+solicitudCtr.rechazarPago = (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};
+
 solicitudCtr.rechazarSolicitud = (req, res, next) => {
   try {
     const { id_solicitud } = req.params;
@@ -498,7 +505,11 @@ solicitudCtr.rechazarSolicitud = (req, res, next) => {
       )
       .then(({ rows }) => {
         console.log(rows);
-        sendSolicitudRechazada(rows[0].correo,rows[0].codigo_solicitud,motivo);
+        sendSolicitudRechazada(
+          rows[0].correo,
+          rows[0].codigo_solicitud,
+          motivo
+        );
         res.json(rows);
       });
   } catch (error) {

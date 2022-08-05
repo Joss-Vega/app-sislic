@@ -173,7 +173,7 @@ const sendSolicitudRechazada = (email, code,motivo) => {
   });
 };
 
-const sendPagoRechazado = (email) => {
+const sendPagoRechazado = (email,motivo) => {
   return transport.sendMail({
     from: `GESTION DE LICENCIAS CHOSICA <appgeslic@gmail.com> `,
     to: email,
@@ -202,9 +202,7 @@ const sendPagoRechazado = (email) => {
           <p style="margin: 2px; font-size: 15px">
             Buenas contribuyente;<br><br>
             Lamentamos informarle que su voucher de pago no fue aprobada, esto puede deberse por la siguientes razones:<br><br>
-            Observaciones:<br>
-            - El voucher no es visible <br>
-            - El voucher de pago es incorrecto al monto solicitado <br></vr></p>
+            Observaciones:${motivo}
           <div style="width: 100%;margin:20px 0; display: inline-block;text-align: center">
             <img style="padding: 0; width: 200px; margin: 5px"
               src="https://cdn-icons-png.flaticon.com/512/191/191181.png">
