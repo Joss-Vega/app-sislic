@@ -20,10 +20,14 @@ authController.login = async (req, res) => {
     "update usuario set hash = $1 where id_usuario = $2",
     [hashedRefreshToken, user.id]
   );
-  res.cookie("jwt", tokens, { httpOnly: true });
+  res.cookie("jwt", tokens, {
+    httpOnly: true,
+    domain: ".freenetxa.ml",
+    sameSite: "None",
+    path: "/",
+    secure: true,
+  });
   res.json(tokens);
 };
-
-
 
 module.exports = authController;
