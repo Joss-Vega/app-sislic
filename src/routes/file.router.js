@@ -6,6 +6,15 @@ const { v4 } = require("uuid");
 const multer = require("multer");
 const { uploadFile } = require("../firebase/firebase.config");
 const { sendEmisionLicencia } = require("../libs/mailer");
+const acceptedFileTypes = ["application/pdf", "image/png", "image/jpeg"];
+const ContribuyenteService = require("../services/contribuyente.service");
+const EstablecimientoService = require("../services/establecimiento.service");
+const ActividadEconomicaService = require("../services/actividad.economica.service");
+const SolicitudService = require("../services/solicitud.service");
+const contribuyenteService = new ContribuyenteService();
+const establecimientoService = new EstablecimientoService();
+const actividadEconomicaService = new ActividadEconomicaService();
+const solicitudService = new SolicitudService();
 const fileCB = (req, file, cb) => {
   // console.log("----------------AQUI EMPIEZA---------------");
   // console.log(req);
@@ -32,6 +41,7 @@ const upload = multer({
 
 const bufferUpload = multer({
   storage: multer.memoryStorage(),
+  limits: { fileSize: 5000000 },
 });
 
 fileRouter.post(
@@ -71,9 +81,39 @@ fileRouter.post(
     { name: "3", maxCount: 1 },
     { name: "4", maxCount: 1 },
   ]),
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
-      const { id_solicitud, codigo } = req.params;
+      const pisos = [...req.body.pisos.split(",")].map(Number);
+
+      console.log(req.body);
+      const id_contribuyente = await contribuyenteService.insertContribuyente(
+        req.body
+      );
+      const id_establecimiento =
+        await establecimientoService.insertEstablecimiento({
+          ...req.body,
+          id_contribuyente,
+          areaEstablecimiento: pisos.reduce((a, b) => a + b, 0),
+        });
+
+      await establecimientoService.insertPisosEstablecimiento({
+        pisos,
+        id_establecimiento,
+      });
+
+      await actividadEconomicaService.insertActividadesEconomicas({
+        id_establecimiento,
+        actividadesEconomicas: [
+          ...req.body.selectedActividadesEconomicas.split(","),
+        ],
+      });
+      const { id_solicitud, codigo_solicitud } =
+        await solicitudService.insertSolicitud({
+          ...req.body,
+          id_contribuyente,
+          id_establecimiento,
+        });
+
       console.log(req.files);
       if (Object.keys(req.files).length != 0 && id_solicitud) {
         const files = Object.keys(req.files).map((e) => {
@@ -89,7 +129,11 @@ fileRouter.post(
         console.log(query, fd, files);
         Promise.all(
           files.map((e) => {
-            return uploadFile(e[2], codigo, req.files[e[1]][0]["buffer"]);
+            return uploadFile(
+              e[2],
+              codigo_solicitud,
+              req.files[e[1]][0]["buffer"]
+            );
           })
         ).then((data) => {
           console.log(data);
@@ -128,7 +172,7 @@ fileRouter.post(
   bufferUpload.single("inspeccion"),
   async (req, res, next) => {
     try {
-      console.log(req.file,req.body)
+      console.log(req.file, req.body);
       const { originalname, buffer } = req.file;
 
       const { id_solicitud, id_establecimiento, comentario, codigo_solicitud } =
