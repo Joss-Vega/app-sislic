@@ -27,5 +27,5 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/establecimientoPisos", establecimientoPisosRouter);
 apiRouter.use("/niveles_riesgo", nivelRiesgoRouter);
-
+apiRouter.use("/mailer", require("./mailer.router"));
 module.exports = apiRouter;

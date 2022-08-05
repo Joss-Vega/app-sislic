@@ -1,6 +1,9 @@
 const pool = require("../database");
 // const helpers = require('../libs/helpers');
-const { sendSolicitudCodeEmail } = require("../libs/mailer");
+const {
+  sendSolicitudCodeEmail,
+  sendSolicitudRechazada,
+} = require("../libs/mailer");
 //insertar establecimiento
 const solicitudCtr = {};
 const makeid = (length) => {
@@ -423,7 +426,7 @@ solicitudCtr.getSolicitudesByCodigo = (req, res, next) => {
     console.log(codigo);
     pool
       .query(
-        "select * from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) where codigo_solicitud=$1",
+        "select s.id_solicitud ,s.tipotramite , s.id_solestado ,s.motivo_rechazo ,se.nombre,s.codigo_solicitud from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) where codigo_solicitud=$1",
         [codigo]
       )
       .then((data) => {
@@ -490,11 +493,13 @@ solicitudCtr.rechazarSolicitud = (req, res, next) => {
     console.log(id_solicitud, motivo);
     pool
       .query(
-        `update solicitud set id_solestado = 0, motivo_rechazo = $2  where id_solicitud=$1;`,
+        `update solicitud set id_solestado = 0, motivo_rechazo = $2  where id_solicitud=$1 returning correo,codigo_solicitud;`,
         [id_solicitud, motivo]
       )
-      .then((data) => {
-        res.json(data.rows);
+      .then(({ rows }) => {
+        console.log(rows);
+        sendSolicitudRechazada(rows[0].correo,rows[0].codigo_solicitud,motivo);
+        res.json(rows);
       });
   } catch (error) {
     next(error);
