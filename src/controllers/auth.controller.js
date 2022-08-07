@@ -8,7 +8,7 @@ const authController = {};
 authController.login = async (req, res) => {
   const user = req.user;
   const access_token = jwt.sign({ user }, tokenSecret, {
-    expiresIn: "30m",
+    expiresIn: "5s",
   });
   const refresh_token = jwt.sign({ user }, refreshSecret, {
     expiresIn: "1d",
@@ -22,10 +22,10 @@ authController.login = async (req, res) => {
   );
   res.cookie("jwt", tokens, {
     httpOnly: true,
-    domain: ".freenetxa.ml",
-    sameSite: "None",
-    path: "/",
-    secure: true,
+    // domain: ".freenetxa.ml",
+    // sameSite: "None",
+    // path: "/",
+    // secure: true,
   });
   res.json(tokens);
 };

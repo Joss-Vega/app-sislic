@@ -11,10 +11,14 @@ const ContribuyenteService = require("../services/contribuyente.service");
 const EstablecimientoService = require("../services/establecimiento.service");
 const ActividadEconomicaService = require("../services/actividad.economica.service");
 const SolicitudService = require("../services/solicitud.service");
+const passport = require("passport");
 const contribuyenteService = new ContribuyenteService();
 const establecimientoService = new EstablecimientoService();
 const actividadEconomicaService = new ActividadEconomicaService();
 const solicitudService = new SolicitudService();
+
+require("../auth/strategies/jwt.strategy");
+
 const fileCB = (req, file, cb) => {
   // console.log("----------------AQUI EMPIEZA---------------");
   // console.log(req);
@@ -211,9 +215,11 @@ fileRouter.post(
 
 fileRouter.post(
   "/licencia",
+  passport.authenticate("jwt", { session: false }),
   bufferUpload.single("licencia"),
   (req, res, next) => {
     try {
+      const { id: id_usuario } = req.user;
       const { originalname, buffer } = req.file;
 
       const {
@@ -234,7 +240,7 @@ fileRouter.post(
               [
                 id_establecimiento,
                 id_solicitud,
-                1,
+                id_usuario,
                 numero_licencia,
                 newName,
                 comentario,
