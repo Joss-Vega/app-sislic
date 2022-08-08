@@ -20,6 +20,18 @@ authRouter.post(
     res.json(req.user);
   }
 );
+
+authRouter.post(
+  "/validate",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    if (req.user) {
+      return res.send(true);
+    }
+    res.send(false);
+  }
+);
+
 authRouter.post(
   "/refresh",
   passport.authenticate("refresh", { session: false }),
