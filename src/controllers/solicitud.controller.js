@@ -406,10 +406,12 @@ solicitudCtr.getSolicitudesEmitidas = async (req, res, next) => {
 };
 solicitudCtr.validarSolicitud = async (req, res, next) => {
   try {
+    const { id: id_usuario } = req.user;
+
     const response = await pool.query(
-      `update solicitud set id_solestado = 2 where id_solicitud=$1;
+      `update solicitud set id_solestado = 2,id_usuariomod=$2,fecha_mod=now()  where id_solicitud=$1;
     `,
-      [req.body.id_solicitud]
+      [req.body.id_solicitud,id_usuario]
     );
 
     res.json({
@@ -473,12 +475,13 @@ solicitudCtr.getSolicitudByCodigoPagada = (req, res, next) => {
 };
 solicitudCtr.validarPago = (req, res, next) => {
   try {
+    const { id: id_usuario } = req.user;
+
     const { codigo } = req.body;
-    console.log(codigo);
     pool
       .query(
-        "update solicitud set id_solestado = 5 where codigo_solicitud=$1;",
-        [codigo]
+        "update solicitud set id_solestado = 5,id_usuariomod = $2,fecha_mod=now() where codigo_solicitud=$1;",
+        [codigo,id_usuario]
       )
       .then((data) => {
         res.json(data.rows);
@@ -489,12 +492,14 @@ solicitudCtr.validarPago = (req, res, next) => {
 };
 solicitudCtr.rechazarPago = (req, res, next) => {
   try {
+    const { id: id_usuario } = req.user;
+
     const { codigo_solicitud } = req.params;
     const { motivo } = req.body;
     pool
       .query(
-        `update solicitud set id_solestado = 3,voucher = null  where codigo_solicitud=$1 returning correo;`,
-        [codigo_solicitud]
+        `update solicitud set id_solestado = 3,id_usuariomod=$2,fecha_mod=now(),voucher = null  where codigo_solicitud=$1 returning correo;`,
+        [codigo_solicitud,id_usuario]
       )
       .then(({ rows }) => {
         sendPagoRechazado(rows[0].correo, motivo);
@@ -507,13 +512,15 @@ solicitudCtr.rechazarPago = (req, res, next) => {
 
 solicitudCtr.rechazarSolicitud = (req, res, next) => {
   try {
+    const { id: id_usuario } = req.user;
+
     const { id_solicitud } = req.params;
     const { motivo } = req.body;
     console.log(id_solicitud, motivo);
     pool
       .query(
-        `update solicitud set id_solestado = 0, motivo_rechazo = $2  where id_solicitud=$1 returning correo,codigo_solicitud;`,
-        [id_solicitud, motivo]
+        `update solicitud set id_solestado = 0, motivo_rechazo = $2, id_usuariomod=$3,fecha_mod=now()  where id_solicitud=$1 returning correo,codigo_solicitud;`,
+        [id_solicitud, motivo,id_usuario]
       )
       .then(({ rows }) => {
         console.log(rows);
