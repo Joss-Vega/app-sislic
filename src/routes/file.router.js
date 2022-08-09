@@ -173,10 +173,11 @@ fileRouter.post(
 
 fileRouter.post(
   "/inspeccion",
+  passport.authenticate("jwt", { session: false }),
   bufferUpload.single("inspeccion"),
   async (req, res, next) => {
     try {
-      console.log(req.file, req.body);
+      const { id: id_usuario } = req.user;
       const { originalname, buffer } = req.file;
 
       const { id_solicitud, id_establecimiento, comentario, codigo_solicitud } =
@@ -189,7 +190,13 @@ fileRouter.post(
             .query(
               `insert into inspeccion (id_solicitud, id_establecimiento, comentario, link_file, fecha_registro,id_usuarioreg)
                   values ($1,$2,$3,$4,now(),$5) returning id_inspeccion;`,
-              [id_solicitud, id_establecimiento, comentario, newName, 1]
+              [
+                id_solicitud,
+                id_establecimiento,
+                comentario,
+                newName,
+                id_usuario,
+              ]
             )
             .then((data) => {
               pool
