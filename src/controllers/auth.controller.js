@@ -22,10 +22,10 @@ authController.login = async (req, res) => {
   );
   res.cookie("jwt", tokens, {
     httpOnly: true,
-    domain: ".freenetxa.ml",
-    sameSite: "None",
-    path: "/",
-    secure: true,
+    // domain: ".freenetxa.ml",
+    // sameSite: "None",
+    // path: "/",
+    // secure: true,
   });
   res.json(tokens);
 };

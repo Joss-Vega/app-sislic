@@ -61,7 +61,7 @@ from solicitud s
   join contribuyente c on (s.id_contribuyente = c.id_contribuyente)
   join solicitud_estado se on (se.id_solestado = s.id_solestado)
   join establecimiento e on (e.id_establecimiento = s.id_establecimiento) 
-  where s.id_solestado=${estado} ${condition};`;
+  where s.id_solestado in (${estado}) ${condition};`;
 };
 
 //Insertar Solicitudes
@@ -387,8 +387,8 @@ solicitudCtr.getSolicitudesInspeccion = async (req, res, next) => {
   try {
     const response = await pool.query(
       getSolicitudByEstadoQuery(
-        5,
-        "or s.id_solestado=6 and s.id_riesgo in (2,3,4) and s.inspeccion is null"
+        '5,6',
+        "and s.id_riesgo in (2,3,4) and s.inspeccion is null"
       )
     );
     return res.status(200).json(response.rows);
