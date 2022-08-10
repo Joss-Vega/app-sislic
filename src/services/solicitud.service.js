@@ -17,6 +17,7 @@ class SolicitudService {
       id_contribuyente,
       id_establecimiento,
       tipoTramite,
+      tipoLicencia,
       direccionNotificacion,
       distritoNotificacion,
       email,
