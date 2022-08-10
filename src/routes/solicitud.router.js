@@ -1,6 +1,9 @@
 const { Router } = require("express");
+const passport = require("passport");
 const solicitudRouter = Router();
 const { hasRole } = require("../auth/token_validation");
+
+require("../auth/strategies/jwt.strategy");
 const {
   insertSolicitud,
   getSolicitudesEmitidas,
@@ -79,10 +82,26 @@ solicitudRouter.get("/pagadas_validadas", getSolicitudesPagadasValidadas);
 solicitudRouter.get("/inspeccion", getSolicitudesInspeccion);
 
 solicitudRouter.get("/emitidas", getSolicitudesEmitidas);
-solicitudRouter.put("/validar", validarSolicitud);
-solicitudRouter.put("/validar_pago", validarPago);
-solicitudRouter.put("/rechazar/:id_solicitud", rechazarSolicitud);
-solicitudRouter.put("/pago/:codigo_solicitud", rechazarPago);
+solicitudRouter.put(
+  "/validar",
+  passport.authenticate("jwt", { session: false }),
+  validarSolicitud
+);
+solicitudRouter.put(
+  "/validar_pago",
+  passport.authenticate("jwt", { session: false }),
+  validarPago
+);
+solicitudRouter.put(
+  "/rechazar/:id_solicitud",
+  passport.authenticate("jwt", { session: false }),
+  rechazarSolicitud
+);
+solicitudRouter.put(
+  "/pago/:codigo_solicitud",
+  passport.authenticate("jwt", { session: false }),
+  rechazarPago
+);
 
 solicitudRouter.get("/codigo/:codigo", getSolicitudesByCodigo);
 solicitudRouter.get("/codigo/:codigo/evaluada", getSolicitudByCodigoEvaluada);
