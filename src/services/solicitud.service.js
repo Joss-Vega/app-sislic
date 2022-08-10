@@ -27,7 +27,7 @@ class SolicitudService {
     const { rows } = await pool.query(
       `insert into solicitud (id_contribuyente, id_establecimiento, tipotramite, tipolicencia,notif_direccion, notif_distrito, correo, telefono, anexo_02, declaracion_jurada,
                   fecha_reg, codigo_solicitud, id_solestado)
-                  values ($1,$2,$3,$4,$5,$6,$7,1,1,now(),$8,1) returning id_solicitud;`,
+                  values ($1,$2,$3,$4,$5,$6,$7,$8,1,1,now(),$9,1) returning id_solicitud;`,
       [
         id_contribuyente,
         id_establecimiento,
