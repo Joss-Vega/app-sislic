@@ -154,6 +154,7 @@ fileRouter.post(
         throw new Error("No se encontraron archivos");
       }
     } catch (error) {
+      console.log(error)
       next(error);
     }
   }
