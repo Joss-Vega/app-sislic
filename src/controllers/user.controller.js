@@ -6,6 +6,85 @@ const { encryptPassword, matchPassword } = require("../libs/helpers");
 
 const userCtr = {};
 
+userCtr.getAccess = async (req, res, next) => {
+  try {
+    const { rows } = await pool.query("select * from acceso");
+    res.json(rows);
+  } catch (error) {
+    next(error);
+  }
+};
+
+userCtr.getAccessByIdRol = async (req, res, next) => {
+  try {
+    const { id_rol } = req.params;
+
+    const { rows } = await pool.query(
+      "select r.id_rol, r.nombre rol, a.id_acceso , a.nombre nombre  from acceso a join rol_acceso ra on (ra.id_acceso = a.id_acceso) join rol r on (ra.id_rol = r.id_rol) where ra.id_rol = $1",
+      [id_rol]
+    );
+    const [rol_acceso] = rows;
+    res.json(
+      rol_acceso
+        ? {
+            id_rol: rol_acceso.id_rol,
+            rol: rol_acceso.rol,
+            accesos: rows.map((e) => ({
+              id_acceso: e.id_acceso,
+              nombre: e.nombre,
+            })),
+          }
+        : rows
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+userCtr.createRole = async (req, res, next) => {
+  try {
+    const { rol, accesos } = req.body;
+    console.log(accesos)
+    const {
+      rows: [new_rol],
+    } = await pool.query(
+      "insert into rol(nombre,estado,fecha_creacion) values($1,1,now()) returning id_rol",
+      [rol]
+    );
+    const parsedAccess = accesos
+      .map((e) => [new_rol.id_rol, e])
+      .flat();
+    const query = `insert into rol_acceso(id_rol,id_acceso) values ${parsedAccess
+      .map((e, i) => {
+        return (i + 1) % 2 > 0 ? `($${i + 1},` : i<parsedAccess.length-1 ? `$${i + 1}),` : `$${i + 1})`;
+      })
+      .join("")}`;
+    console.log(query,parsedAccess);
+    const {
+      rowCount
+    } = await pool.query(query, parsedAccess);
+    res.json({
+      status: "Rol creado correctamente",
+      code: rowCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+userCtr.deleteRoleById = async (req, res, next) => {
+  try {
+    const { id_rol } = req.params;
+    await pool.query("delete from rol_acceso where id_rol = $1", [id_rol]);
+    await pool.query("delete from rol where id_rol = $1", [id_rol]);
+
+    res.status(200).json({
+      status: "Rol eliminado correctamente",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 userCtr.getAccessFromRoleName = async (req, res, next) => {
   try {
     const { role } = req.user;

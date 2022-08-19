@@ -14,6 +14,8 @@ authController.login = async (req, res) => {
     expiresIn: "1d",
   });
 
+
+
   const tokens = { access_token, refresh_token };
   const hashedRefreshToken = await hash(refresh_token, 10);
   const result = await pool.query(
@@ -22,10 +24,10 @@ authController.login = async (req, res) => {
   );
   res.cookie("jwt", tokens, {
     httpOnly: true,
-    domain: ".geslic.ga",
-    sameSite: "None",
-    path: "/",
-    secure: true,
+    // domain: ".geslic.ga",
+    // sameSite: "None",
+    // path: "/",
+    // secure: true,
   });
   res.json(tokens);
 };
