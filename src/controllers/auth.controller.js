@@ -24,10 +24,10 @@ authController.login = async (req, res) => {
   );
   res.cookie("jwt", tokens, {
     httpOnly: true,
-    // domain: ".geslic.ga",
-    // sameSite: "None",
-    // path: "/",
-    // secure: true,
+    domain: ".geslic.ga",
+    sameSite: "None",
+    path: "/",
+    secure: true,
   });
   res.json(tokens);
 };
