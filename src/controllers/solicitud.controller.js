@@ -55,8 +55,8 @@ const getSolicitudByEstadoQuery = (estado, condition = "") => {
   e.pisos,
   s.codigo_solicitud,
   s.id_solestado,
-  s.tipotramite,
-  s.tipolicencia
+  s.id_tipotramite,
+  s.id_lictipo
 from solicitud s
   join contribuyente c on (s.id_contribuyente = c.id_contribuyente)
   join solicitud_estado se on (se.id_solestado = s.id_solestado)
