@@ -26,7 +26,7 @@ specifiers:
   pg: ^8.7.1
   svg-captcha: ^1.4.0
   twilio: ^3.80.0
-  uuidv4: ^6.2.13
+  uuid: ^8.3.2
 
 dependencies:
   '@hapi/boom': 10.0.0
@@ -52,7 +52,7 @@ dependencies:
   pg: 8.7.3
   svg-captcha: 1.4.0
   twilio: 3.80.0
-  uuidv4: 6.2.13
+  uuid: 8.3.2
 
 devDependencies:
   gh-pages: 3.2.3
@@ -370,10 +370,6 @@ packages:
     dependencies:
       '@types/mime': 3.0.0
       '@types/node': 18.6.3
-    dev: false
-
-  /@types/uuid/8.3.4:
-    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: false
 
   /abbrev/1.1.1:
@@ -2447,13 +2443,6 @@ packages:
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
-    dev: false
-
-  /uuidv4/6.2.13:
-    resolution: {integrity: sha512-AXyzMjazYB3ovL3q051VLH06Ixj//Knx7QnUSi1T//Ie3io6CpsPu9nVMOx5MoLWh6xV0B9J0hIaxungxXUbPQ==}
-    dependencies:
-      '@types/uuid': 8.3.4
-      uuid: 8.3.2
     dev: false
 
   /vary/1.1.2:
