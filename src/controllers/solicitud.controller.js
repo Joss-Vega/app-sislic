@@ -430,7 +430,7 @@ solicitudCtr.getSolicitudesByCodigo = (req, res, next) => {
     console.log(codigo);
     pool
       .query(
-        "select s.id_solicitud ,s.tipotramite , s.id_solestado ,s.motivo_rechazo ,se.nombre,s.codigo_solicitud from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) where codigo_solicitud=$1",
+        "select s.id_solicitud ,s.id_tipotramite , s.id_solestado ,s.motivo_rechazo ,se.nombre,s.codigo_solicitud from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) where codigo_solicitud=$1",
         [codigo]
       )
       .then((data) => {
@@ -446,7 +446,7 @@ solicitudCtr.getSolicitudByCodigoEvaluada = (req, res, next) => {
     const { codigo } = req.params;
     pool
       .query(
-        "select s.codigo_solicitud,s.tipotramite,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 3",
+        "select s.codigo_solicitud,s.id_tipotramite,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 3",
         [codigo]
       )
       .then((data) => {
