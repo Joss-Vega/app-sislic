@@ -27,13 +27,13 @@ userCtr.getAccessByIdRol = async (req, res, next) => {
     res.json(
       rol_acceso
         ? {
-            id_rol: rol_acceso.id_rol,
-            rol: rol_acceso.rol,
-            accesos: rows.map((e) => ({
-              id_acceso: e.id_acceso,
-              nombre: e.nombre,
-            })),
-          }
+          id_rol: rol_acceso.id_rol,
+          rol: rol_acceso.rol,
+          accesos: rows.map((e) => ({
+            id_acceso: e.id_acceso,
+            nombre: e.nombre,
+          })),
+        }
         : rows
     );
   } catch (error) {
@@ -55,10 +55,10 @@ userCtr.createRole = async (req, res, next) => {
       .flat();
     const query = `insert into rol_acceso(id_rol,id_acceso) values ${parsedAccess
       .map((e, i) => {
-        return (i + 1) % 2 > 0 ? `($${i + 1},` : i<parsedAccess.length-1 ? `$${i + 1}),` : `$${i + 1})`;
+        return (i + 1) % 2 > 0 ? `($${i + 1},` : i < parsedAccess.length - 1 ? `$${i + 1}),` : `$${i + 1})`;
       })
       .join("")}`;
-    console.log(query,parsedAccess);
+    console.log(query, parsedAccess);
     const {
       rowCount
     } = await pool.query(query, parsedAccess);
@@ -162,13 +162,9 @@ userCtr.getAllRoles = async (req, res, next) => {
 userCtr.deleteUser = async (req, res, next) => {
   try {
     const { id_user } = req.params;
-    pool
-      .query("delete from usuario where id_usuario = $1 ", [id_user])
-      .then((data) => {
-        return res
-          .status(200)
-          .json(`Usuario ${id_user} eliminado correctamente...!`);
-      });
+    await pool.query("delete from usuario where id_usuario = $1 ", [id_user])
+
+    return res.json(`Usuario ${id_user} eliminado correctamente`);
   } catch (error) {
     next(error);
   }
