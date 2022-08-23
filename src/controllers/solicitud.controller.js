@@ -463,7 +463,7 @@ solicitudCtr.getSolicitudByCodigoPagada = (req, res, next) => {
     const { codigo } = req.params;
     pool
       .query(
-        "select s.codigo_solicitud,s.tipotramite,s.voucher,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 4",
+        "select s.codigo_solicitud,s.id_tipotramite,s.voucher,se.nombre estado_nombre, nr.nombre riesgo_nombre,nr.tasa from solicitud s join solicitud_estado se on (s.id_solestado = se.id_solestado) join nivel_riesgo nr on (nr.id_riesgo = s.id_riesgo) where codigo_solicitud=$1 and s.id_solestado = 4",
         [codigo]
       )
       .then((data) => {
